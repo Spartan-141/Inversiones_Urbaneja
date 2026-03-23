@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+body {
+  @apply bg-surface-900 text-white;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { @apply bg-transparent; }
+::-webkit-scrollbar-thumb { @apply bg-white/10 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-white/20; }
+
+/* ── Typography ───────────────────────────────────────────────────────────── */
+.page-title {
+  @apply text-xl font-bold text-white;
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────────── */
+.card {
+  @apply bg-surface-800 border border-white/5 rounded-2xl p-4;
+}
+
+.card-sm {
+  @apply bg-surface-700 border border-white/5 rounded-xl p-3;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.btn-primary {
+  @apply flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium
+         bg-brand-600 hover:bg-brand-500 text-white
+         transition-all duration-150 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+.btn-success {
+  @apply flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium
+         bg-accent-green/90 hover:bg-accent-green text-white
+         transition-all duration-150 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+.btn-danger {
+  @apply flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium
+         bg-accent-red/80 hover:bg-accent-red text-white
+         transition-all duration-150 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium
+         bg-surface-600 hover:bg-surface-700 border border-white/10 text-white
+         transition-all duration-150 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed;
+}
+
+.btn-ghost {
+  @apply flex items-center justify-center gap-1 px-3 py-2 rounded-xl font-medium
+         text-gray-400 hover:text-white hover:bg-white/5
+         transition-all duration-150 active:scale-95 disabled:opacity-40;
+}
+
+.btn-sm  { @apply px-2.5 py-1.5 text-sm; }
+.btn-lg  { @apply px-6 py-3 text-base font-semibold; }
+
+/* ── Inputs ───────────────────────────────────────────────────────────────── */
+.input {
+  @apply w-full bg-surface-700 border border-white/10 rounded-xl px-3 py-2
+         text-white text-sm placeholder-gray-500
+         focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500
+         transition-colors;
+}
+
+.input-sm {
+  @apply bg-surface-700 border border-white/10 rounded-lg px-2 py-1
+         text-white text-sm placeholder-gray-500
+         focus:outline-none focus:ring-1 focus:ring-brand-500/50;
+}
+
+.label {
+  @apply block text-xs text-gray-400 mb-1 font-medium;
+}
+
+.select {
+  @apply input appearance-none cursor-pointer;
+}
+
+/* ── Modals ───────────────────────────────────────────────────────────────── */
+.modal-backdrop {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4
+         bg-black/70 backdrop-blur-sm;
+  animation: fade-in 0.15s ease-out;
+}
+
+.modal {
+  @apply bg-surface-800 border border-white/10 rounded-2xl p-6 w-full max-w-md
+         shadow-2xl;
+  animation: slide-in 0.15s ease-out;
+}
+
+.modal-lg {
+  @apply bg-surface-800 border border-white/10 rounded-2xl p-6 w-full max-w-2xl
+         shadow-2xl max-h-[90vh] overflow-y-auto;
+  animation: slide-in 0.15s ease-out;
+}
+
+/* ── Tables ───────────────────────────────────────────────────────────────── */
+table { @apply w-full text-sm; }
+thead { @apply border-b border-white/10; }
+th { @apply text-left text-xs text-gray-500 font-medium uppercase tracking-wider pb-2; }
+td { @apply py-2.5 border-b border-white/5 align-middle; }
+tr:last-child td { @apply border-b-0; }
+
+/* ── Badges ───────────────────────────────────────────────────────────────── */
+.badge {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-blue   { @apply bg-brand-900/50 text-brand-300 border border-brand-500/30; }
+.badge-green  { @apply bg-green-900/40 text-green-300 border border-green-500/30; }
+.badge-yellow { @apply bg-yellow-900/40 text-yellow-300 border border-yellow-500/30; }
+.badge-red    { @apply bg-red-900/40 text-red-300 border border-red-500/30; }
+.badge-orange { @apply bg-orange-900/40 text-orange-300 border border-orange-500/30; }
+.badge-sm     { @apply text-[11px] px-1.5 py-0; }
+
+/* ── KPI Card ─────────────────────────────────────────────────────────────── */
+.kpi-card {
+  @apply card flex flex-col gap-1;
+}
+
+.kpi-value {
+  @apply text-2xl font-bold text-white leading-none;
+}
+
+.kpi-label {
+  @apply text-xs text-gray-500 font-medium uppercase tracking-wider;
+}
+
+/* ── Animations ───────────────────────────────────────────────────────────── */
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+.animate-slide-in  { animation: slide-in 0.15s ease-out; }
+.animate-fade-in   { animation: fade-in 0.2s ease-out; }
+.animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+
+/* ── Favorite button grid ─────────────────────────────────────────────────── */
+.fav-btn {
+  @apply flex flex-col items-center justify-center gap-1 p-2 rounded-xl
+         bg-surface-700 hover:bg-surface-600 border border-white/5 hover:border-brand-500/40
+         text-white text-xs font-medium text-center
+         transition-all duration-150 active:scale-95 cursor-pointer;
+  min-height: 64px;
+}
+
+.fav-btn-kg {
+  @apply fav-btn border-orange-500/30 hover:border-orange-500/60;
+}

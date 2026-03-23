@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline' https://fonts.googleapis.com; font-src * https://fonts.gstatic.com; img-src * data: blob:; connect-src *;">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Inversiones Urbaneja</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      if (window.api) window.api.invoke('log', '--- INLINE SCRIPT EXECUTING ---');
+      window.addEventListener('error', e => window.api?.invoke('log', `HTML Error: ${e.message}`));
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
