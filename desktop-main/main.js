@@ -4,7 +4,14 @@ const path = require('path');
 const isDev = process.env.NODE_ENV === 'development';
 
 // ─── DB bootstrap ───────────────────────────────────────────────────────────
-const { initDb } = require('./database/db');
+const { initDb } = require('./infrastructure/database/connection/Database');
+
+// ─── Controllers ───────────────────────────────────────────────────────────
+const { registerVentasHandlers } = require('./infrastructure/controllers/ipc/VentasIpcController');
+const { registerProductosHandlers } = require('./infrastructure/controllers/ipc/ProductosIpcController');
+const { registerCategoriasHandlers } = require('./infrastructure/controllers/ipc/CategoriasIpcController');
+const { registerConfigHandlers } = require('./infrastructure/controllers/ipc/ConfigIpcController');
+const { registerCierresHandlers } = require('./infrastructure/controllers/ipc/CierresIpcController');
 
 let mainWindow;
 
@@ -41,14 +48,12 @@ function createWindow() {
 app.whenReady().then(async () => {
   await initDb();
 
-  // Register all IPC handlers
-  require('./database/handlers/config');
-  require('./database/handlers/categorias');
-  require('./database/handlers/productos');
-  require('./database/handlers/ventas');
-  require('./database/handlers/cuentas');
-  require('./database/handlers/cierres');
-  require('./database/handlers/reportes');
+  // Register all IPC handlers using new controllers
+  registerVentasHandlers();
+  registerProductosHandlers();
+  registerCategoriasHandlers();
+  registerConfigHandlers();
+  registerCierresHandlers();
 
   // Quick debug logger
   ipcMain.handle('log', (_, msg) => {

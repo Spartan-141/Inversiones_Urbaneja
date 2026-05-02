@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { LuLock, LuDollarSign, LuBanknote, LuSmartphone, LuLandmark, LuRefreshCw, LuCircleCheck, LuTriangleAlert } from 'react-icons/lu'
+import { LuLock, LuBanknote, LuSmartphone, LuLandmark, LuRefreshCw, LuCircleCheck, LuTriangleAlert } from 'react-icons/lu'
 import { useApp } from '../context/AppContext.jsx'
 import { format } from 'date-fns'
 import AlertModal from '../components/AlertModal.jsx'
 
 export default function CierreDeCaja() {
-  const { tasa, fmt } = useApp()
+  const { fmt } = useApp()
   const [resumen, setResumen] = useState(null)
   const [cerrado, setCerrado] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -15,7 +15,7 @@ export default function CierreDeCaja() {
 
   // Physical cash count inputs
   const [contado, setContado] = useState({
-    efectivo_usd: '', efectivo_ves: '', digital_ves: '',
+    efectivo: '', digital: '',
   })
 
   const load = useCallback(async () => {
@@ -38,9 +38,20 @@ export default function CierreDeCaja() {
 
   const c = (k) => parseFloat(contado[k]) || 0
 
-  const dif_usd = c('efectivo_usd') - (resumen?.efectivo_usd_sistema || 0)
-  const dif_ves = c('efectivo_ves') - (resumen?.efectivo_ves_sistema || 0)
-  const dif_dig = c('digital_ves')  - (resumen?.digital_ves_sistema  || 0)
+  const getSist = (metodo) => {
+    if (!resumen?.pagos) return 0
+    return resumen.pagos.filter(p => {
+      if (metodo === 'efectivo') return p.metodo === 'efectivo'
+      return p.metodo === 'pago_movil' || p.metodo === 'transferencia'
+    }).reduce((acc, p) => acc + p.total, 0)
+  }
+
+  const sistEfe = getSist('efectivo')
+  const sistDig = getSist('digital')
+  const difEfe = c('efectivo') - sistEfe
+  const difDig = c('digital') - sistDig
+  const totalSist = sistEfe + sistDig
+  const totalCont = c('efectivo') + c('digital')
 
   const handleCerrar = async () => {
     if (!resumen) return
@@ -48,18 +59,15 @@ export default function CierreDeCaja() {
     try {
       await window.api.invoke('cierres:cerrar', {
         fecha: resumen.fecha,
-        tasa_cierre: tasa,
         totalVentasCount: resumen.totalVentasCount,
-        ingresos_usd: resumen.ingresos_usd,
-        efectivo_usd_sistema: resumen.efectivo_usd_sistema,
-        efectivo_ves_sistema: resumen.efectivo_ves_sistema,
-        digital_ves_sistema:  resumen.digital_ves_sistema,
-        efectivo_usd_contado: c('efectivo_usd'),
-        efectivo_ves_contado: c('efectivo_ves'),
-        digital_ves_contado:  c('digital_ves'),
-        diferencia_usd: dif_usd,
-        diferencia_ves: dif_ves + dif_dig,
-        pendiente_cobrar_usd: resumen.pendiente_cobrar_usd,
+        ingresos: resumen.ingresos,
+        efectivo_sistema: sistEfe,
+        digital_sistema:  sistDig,
+        efectivo_contado: c('efectivo'),
+        digital_contado:  c('digital'),
+        diferencia: difEfe + difDig,
+        pendiente_cobrar: resumen.pendiente_cobrar,
+        ganancia_neta: 0, // Simplified for now
         notas,
       })
       load()
@@ -70,126 +78,140 @@ export default function CierreDeCaja() {
     }
   }
 
-  const DifBadge = ({ val, currency = '$' }) => {
-    if (Math.abs(val) < 0.01) return <span className="badge badge-green">✓ Cuadra</span>
-    if (val < 0) return <span className="badge badge-red">Faltante {currency}{Math.abs(val).toFixed(2)}</span>
-    return <span className="badge badge-yellow">Sobrante {currency}{Math.abs(val).toFixed(2)}</span>
+  const DifBadge = ({ val }) => {
+    if (Math.abs(val) < 0.05) return <span className="badge-green">✓ Cuadra</span>
+    if (val < 0) return <span className="badge-red">Faltante {fmt(Math.abs(val))}</span>
+    return <span className="badge-yellow">Sobrante {fmt(val)}</span>
   }
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-full text-gray-500">Cargando...</div>
-  }
+  if (loading) return <div className="page justify-center items-center opacity-50"><LuRefreshCw className="animate-spin text-4xl" /></div>
 
   return (
-    <div className="h-full overflow-y-auto p-4 md:p-6 space-y-6 max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="page-title flex items-center gap-2"><LuLock className="text-brand-400" /> Cierre de Caja</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{format(new Date(), 'dd/MM/yyyy')}</p>
-        </div>
-        <button onClick={load} className="btn-ghost btn-sm"><LuRefreshCw /> Actualizar</button>
-      </div>
-
-      {/* Already closed notice */}
-      {cerrado && (
-        <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-4 flex items-center gap-3">
-          <LuCircleCheck className="text-green-400 text-2xl shrink-0" />
+    <div className="page max-w-4xl mx-auto">
+      <div className="page-header">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-glow">
+            <LuLock size={24} />
+          </div>
           <div>
-            <p className="font-semibold text-green-300">Caja cerrada hoy</p>
-            <p className="text-sm text-gray-400">Cerrado a las {cerrado.cerrado_en?.split(' ')[1] || ''}</p>
+            <h1 className="page-title text-white">Cierre de Caja</h1>
+            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">{format(new Date(), 'dd/MM/yyyy')}</p>
+          </div>
+        </div>
+        <button onClick={load} className="btn-secondary h-12 w-12 flex items-center justify-center"><LuRefreshCw size={20} className={loading ? 'animate-spin' : ''} /></button>
+      </div>
+
+      {cerrado && (
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-3xl p-6 flex items-center gap-5 animate-fade-in shadow-inner">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 shadow-glow-success border border-emerald-500/20">
+            <LuCircleCheck size={28} />
+          </div>
+          <div>
+            <p className="text-xl font-black text-emerald-400 leading-tight">Caja cerrada hoy</p>
+            <p className="text-sm font-bold text-emerald-500/60 uppercase tracking-widest mt-1">El cierre se completó exitosamente a las {cerrado.cerrado_en?.split(' ')[1] || ''}</p>
           </div>
         </div>
       )}
 
-      {/* Today's sales summary */}
-      <div className="card">
-        <h2 className="font-semibold text-white mb-4">📊 Resumen de Ventas del Día</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-          <div className="card-sm">
-            <p className="text-xs text-gray-500 uppercase tracking-wider">Transacciones</p>
-            <p className="text-2xl font-bold text-white mt-1">{resumen?.totalVentasCount || 0}</p>
-          </div>
-          <div className="card-sm">
-            <p className="text-xs text-gray-500 uppercase tracking-wider">Total Ingresos</p>
-            <p className="text-2xl font-bold text-brand-400 mt-1">${Number(resumen?.ingresos_usd || 0).toFixed(2)}</p>
-            <p className="text-xs text-gray-500">Bs. {((resumen?.ingresos_usd || 0) * tasa).toLocaleString('es-VE', { maximumFractionDigits: 2 })}</p>
-          </div>
-          <div className="card-sm">
-            <p className="text-xs text-gray-500 uppercase tracking-wider">Pendiente Cobrar</p>
-            <p className="text-2xl font-bold text-red-400 mt-1">${Number(resumen?.pendiente_cobrar_usd || 0).toFixed(2)}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard label="Transacciones" value={resumen?.totalVentasCount || 0} icon={<LuShoppingCart className="text-indigo-400" />} />
+        <StatCard label="Ingresos (Sistema)" value={fmt(resumen?.ingresos || 0)} colorClass="text-emerald-400" icon={<LuBanknote />} />
+        <StatCard label="Por Cobrar" value={fmt(resumen?.pendiente_cobrar || 0)} colorClass="text-red-400" icon={<LuTriangleAlert />} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* System Summary */}
+        <div className="card p-8 bg-surface-800/50 backdrop-blur-md border border-white/5 rounded-3xl">
+          <h2 className="font-black text-xl mb-6 flex items-center gap-3 text-indigo-400 uppercase tracking-widest"><LuBanknote size={24} /> Datos del Sistema</h2>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center bg-surface-900/80 p-5 rounded-2xl shadow-inner border border-white/5">
+              <span className="flex items-center gap-3 text-sm font-bold text-slate-300 uppercase tracking-widest"><LuBanknote className="text-emerald-400" size={18} /> Efectivo</span>
+              <span className="font-black text-xl text-white">{fmt(sistEfe)}</span>
+            </div>
+            <div className="flex justify-between items-center bg-surface-900/80 p-5 rounded-2xl shadow-inner border border-white/5">
+              <span className="flex items-center gap-3 text-sm font-bold text-slate-300 uppercase tracking-widest"><LuSmartphone className="text-indigo-400" size={18} /> Digital</span>
+              <span className="font-black text-xl text-white">{fmt(sistDig)}</span>
+            </div>
+            <div className="flex justify-between items-center border-t border-dashed border-white/10 pt-6 mt-6">
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">Total Esperado</span>
+              <span className="text-3xl font-black text-indigo-400">{fmt(totalSist)}</span>
+            </div>
           </div>
         </div>
 
-        {/* By payment method — system amounts */}
-        <h3 className="text-sm font-semibold text-gray-400 mb-2 uppercase tracking-wider">Desglose por Método (Sistema)</h3>
-        <div className="space-y-2">
-          {[
-            { key: 'efectivo_usd', label: '$ Efectivo USD',    icon: <LuDollarSign className="text-brand-400" />, val: resumen?.efectivo_usd_sistema, isUsd: true },
-            { key: 'efectivo_ves', label: 'Bs. Efectivo',       icon: <LuBanknote className="text-green-400" />,  val: resumen?.efectivo_ves_sistema, isUsd: false },
-            { key: 'digital_ves', label: 'Digital (Pago Móvil + Transf.)', icon: <LuSmartphone className="text-purple-400" />, val: resumen?.digital_ves_sistema, isUsd: false },
-          ].map(m => (
-            <div key={m.key} className="flex items-center justify-between bg-surface-700 rounded-xl px-4 py-2.5">
-              <div className="flex items-center gap-2 text-sm text-gray-300">
-                {m.icon} {m.label}
+        {/* Physical Count */}
+        <div className="card p-8 bg-surface-800/50 backdrop-blur-md border border-white/5 rounded-3xl">
+          <h2 className="font-black text-xl mb-6 flex items-center gap-3 text-amber-500 uppercase tracking-widest"><LuLock size={24} /> Conteo en Caja</h2>
+          {cerrado ? (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-5 rounded-2xl bg-surface-900/80 shadow-inner border border-white/5">
+                <span className="text-sm font-bold text-slate-300 uppercase tracking-widest">Efectivo Contado</span>
+                <span className="font-black text-xl text-white">{fmt(cerrado.efectivo_contado)}</span>
               </div>
-              <span className="font-mono font-bold text-white text-sm">
-                {m.isUsd ? `$${Number(m.val || 0).toFixed(2)}` : `Bs. ${Number(m.val || 0).toLocaleString('es-VE', { maximumFractionDigits: 2 })}`}
-              </span>
+              <div className="flex justify-between items-center p-5 rounded-2xl bg-surface-900/80 shadow-inner border border-white/5">
+                <span className="text-sm font-bold text-slate-300 uppercase tracking-widest">Digital Contado</span>
+                <span className="font-black text-xl text-white">{fmt(cerrado.digital_contado)}</span>
+              </div>
+              <div className="flex justify-between items-center pt-6 mt-6 border-t border-dashed border-white/10">
+                <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">Diferencia Total</span>
+                <DifBadge val={cerrado.diferencia} />
+              </div>
             </div>
-          ))}
+          ) : (
+            <div className="space-y-6">
+              <div>
+                <label className="label">Efectivo físico en caja (Bs.)</label>
+                <input className="input h-14 text-xl font-black bg-surface-900 border-none shadow-inner text-emerald-400" type="number" step="0.01" placeholder="0,00"
+                  value={contado.efectivo} onChange={e => setContado(p => ({ ...p, efectivo: e.target.value }))} />
+              </div>
+              <div>
+                <label className="label">Digital (Pago Móvil / Transf.) en banco (Bs.)</label>
+                <input className="input h-14 text-xl font-black bg-surface-900 border-none shadow-inner text-indigo-400" type="number" step="0.01" placeholder="0,00"
+                  value={contado.digital} onChange={e => setContado(p => ({ ...p, digital: e.target.value }))} />
+              </div>
+              <div className="pt-6 border-t border-dashed border-white/10 space-y-4">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-bold text-slate-500 uppercase tracking-widest">Dif. Efectivo:</span>
+                  <DifBadge val={difEfe} />
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-bold text-slate-500 uppercase tracking-widest">Dif. Digital:</span>
+                  <DifBadge val={difDig} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Physical count inputs */}
       {!cerrado && (
-        <div className="card">
-          <h2 className="font-semibold text-white mb-1">🧾 Conteo Físico</h2>
-          <p className="text-xs text-gray-500 mb-4">Ingresa lo que contaste en caja para comparar con el sistema</p>
-
-          <div className="space-y-4">
-            {[
-              { key: 'efectivo_usd', label: '$ Efectivo USD en caja', icon: <LuDollarSign />, placeholder: '0.00', sistema: resumen?.efectivo_usd_sistema, isUsd: true },
-              { key: 'efectivo_ves', label: 'Bs. Efectivo en caja',    icon: <LuBanknote />,  placeholder: '0.00', sistema: resumen?.efectivo_ves_sistema, isUsd: false },
-              { key: 'digital_ves', label: 'Bs. Digital (Pago Móvil + Transf.)', icon: <LuSmartphone />, placeholder: '0.00', sistema: resumen?.digital_ves_sistema, isUsd: false },
-            ].map(m => {
-              const contadoVal = parseFloat(contado[m.key]) || 0
-              const sistemaVal = m.sistema || 0
-              const diff = contadoVal - sistemaVal
-              return (
-                <div key={m.key}>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="label flex items-center gap-1 mb-0">{m.icon} {m.label}</label>
-                    <span className="text-xs text-gray-500">
-                      Sistema: {m.isUsd ? `$${sistemaVal.toFixed(2)}` : `Bs. ${sistemaVal.toLocaleString('es-VE', { maximumFractionDigits: 2 })}`}
-                    </span>
-                  </div>
-                  <input className="input font-mono" type="number" min="0" step="0.01" placeholder={m.placeholder}
-                    value={contado[m.key]} onChange={e => setContado(p => ({ ...p, [m.key]: e.target.value }))} />
-                  {contadoVal > 0 && (
-                    <div className="mt-1 flex justify-end">
-                      <DifBadge val={diff} currency={m.isUsd ? '$' : 'Bs.'} />
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-
-          <div className="mt-4">
-            <label className="label">Notas (opcional)</label>
-            <textarea className="input resize-none" rows={2} placeholder="Observaciones del cierre..."
-              value={notas} onChange={e => setNotas(e.target.value)} />
-          </div>
-
-          <button onClick={handleCerrar} disabled={saving} className="btn-danger btn-lg w-full mt-4">
-            <LuLock /> {saving ? 'Cerrando...' : 'Cerrar Caja del Día'}
+        <div className="card p-8 bg-surface-800/50 backdrop-blur-md border border-red-500/10 rounded-3xl mt-6 shadow-[0_0_40px_rgba(239,68,68,0.05)]">
+          <label className="label text-slate-300 font-bold uppercase tracking-widest text-xs mb-3">Notas / Observaciones del Cierre</label>
+          <textarea className="input h-24 resize-none mb-6 bg-surface-900 border-none shadow-inner text-white p-5 rounded-2xl" placeholder="Ej: Faltante de 5 Bs por redondeo..."
+            value={notas} onChange={e => setNotas(e.target.value)} />
+          <button onClick={handleCerrar} disabled={saving} className="btn-danger btn-lg w-full h-16 text-lg font-black uppercase tracking-widest shadow-glow-danger relative overflow-hidden group rounded-2xl">
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+            <span className="relative flex items-center justify-center gap-2">
+              {saving ? '⏳ Procesando Cierre...' : '🔒 Cerrar Caja del Día'}
+            </span>
           </button>
-          <p className="text-xs text-gray-600 text-center mt-2">⚠️ Esta operación guarda el registro del día. No elimina datos.</p>
+          <p className="text-center text-[10px] text-red-400/60 font-bold mt-4 uppercase tracking-[0.2em]">
+            ⚠️ Al cerrar la caja se bloquean los registros de este día para el reporte final.
+          </p>
         </div>
       )}
 
-      {alertMsg && <AlertModal title="Error" message={alertMsg} onClose={() => setAlertMsg('')} />}
+      {alertMsg && <AlertModal message={alertMsg} onClose={() => setAlertMsg('')} />}
     </div>
   )
 }
+
+function StatCard({ label, value, colorClass = '', icon }) {
+  return (
+    <div className="stat-card">
+      <p className="stat-label flex items-center gap-2">{icon} {label}</p>
+      <p className={`stat-value ${colorClass}`}>{value}</p>
+    </div>
+  )
+}
+import { LuShoppingCart } from 'react-icons/lu'

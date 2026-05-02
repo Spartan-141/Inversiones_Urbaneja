@@ -3,15 +3,13 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 const AppContext = createContext(null)
 
 export function AppProvider({ children }) {
-  const [tasa, setTasa]     = useState(40.0)
   const [config, setConfig] = useState({})
   const [loading, setLoading] = useState(true)
 
   const loadConfig = useCallback(async () => {
     try {
-      const cfg = await window.api.invoke('config:getAll')
+      const cfg = await window.api.invoke('config:get_all')
       setConfig(cfg)
-      setTasa(parseFloat(cfg.tasa_del_dia) || 40.0)
     } catch (e) {
       console.error('Config load error:', e)
     } finally {
@@ -21,34 +19,18 @@ export function AppProvider({ children }) {
 
   useEffect(() => { loadConfig() }, [loadConfig])
 
-  const updateTasa = useCallback(async (nuevaTasa) => {
-    const val = parseFloat(nuevaTasa)
-    if (isNaN(val) || val <= 0) return
-    await window.api.invoke('config:set', 'tasa_del_dia', String(val))
-    setTasa(val)
-    setConfig(prev => ({ ...prev, tasa_del_dia: String(val) }))
-  }, [])
-
   const updateConfig = useCallback(async (clave, valor) => {
-    await window.api.invoke('config:set', clave, valor)
+    await window.api.invoke('config:set', { clave, valor })
     setConfig(prev => ({ ...prev, [clave]: valor }))
   }, [])
 
-  // Format a USD amount as "$1.50"
-  const fmt = useCallback((usd) =>
-    `$${Number(usd || 0).toFixed(2)}`, [])
-
-  // Format a USD amount as "Bs. 60.00" at current rate
-  const fmtVes = useCallback((usd) => {
-    const ves = (usd || 0) * tasa
-    return `Bs. ${ves.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-  }, [tasa])
-
-  const toVes = useCallback((usd) => (usd || 0) * tasa, [tasa])
-  const toUsd = useCallback((ves) => (ves || 0) / tasa, [tasa])
+  // Format amount as "Bs. 1.234,56"
+  const fmt = useCallback((ves) => {
+    return `Bs. ${Number(ves || 0).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  }, [])
 
   return (
-    <AppContext.Provider value={{ tasa, config, loading, loadConfig, updateTasa, updateConfig, fmt, fmtVes, toVes, toUsd }}>
+    <AppContext.Provider value={{ config, loading, loadConfig, updateConfig, fmt }}>
       {children}
     </AppContext.Provider>
   )
