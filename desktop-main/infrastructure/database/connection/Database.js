@@ -126,6 +126,7 @@ async function initDb() {
     try { await db.exec('ALTER TABLE ventas ADD COLUMN descuento_otorgado REAL NOT NULL DEFAULT 0'); } catch (e) {}
     try { await db.exec('ALTER TABLE ventas ADD COLUMN saldo_pendiente REAL NOT NULL DEFAULT 0'); } catch (e) {}
     try { await db.exec('ALTER TABLE detalle_venta ADD COLUMN subtotal REAL NOT NULL DEFAULT 0'); } catch (e) {}
+    try { await db.exec('ALTER TABLE detalle_venta ADD COLUMN cantidad_hojas_gastadas REAL DEFAULT 0'); } catch (e) {}
     console.log('[DB] Basic migrations checked.');
 
     // ─── Seed defaults ────────────────────────────────────────────────────────
