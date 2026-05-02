@@ -224,87 +224,87 @@ export default function Inventario() {
   }
 
   return (
-    <div className="page">
-      <div className="page-header">
+    <div className="page flex flex-col h-full overflow-hidden">
+      <div className="page-header shrink-0">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-glow">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-100">
             <LuPackage size={24} />
           </div>
           <div>
-            <h1 className="page-title text-white">Inventario</h1>
-            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mt-1">{data.total} productos registrados</p>
+            <h1 className="page-title text-slate-900">Inventario</h1>
+            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">{data.total} productos registrados</p>
           </div>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setModal('crear')} className="btn-primary shadow-glow">
+          <button onClick={() => setModal('crear')} className="btn-primary">
             <LuPlus size={18} /> Nuevo Producto
           </button>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 items-center mb-4 bg-surface-800/50 backdrop-blur-md p-4 rounded-3xl border border-white/5">
+      <div className="flex flex-wrap gap-4 items-center mb-4 bg-slate-100 p-2 rounded-2xl border border-slate-200 shrink-0">
         <div className="relative flex-1 min-w-[250px] group">
-          <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={20} />
-          <input className="input pl-12 h-12 bg-surface-900 border-none shadow-inner" placeholder="Buscar por nombre, marca o código..."
+          <LuSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-600 transition-colors" size={20} />
+          <input className="input pl-12 h-11 bg-white border-slate-200 shadow-sm text-slate-900 placeholder:text-slate-400" placeholder="Buscar por nombre, marca o código..."
             value={search} onChange={e => setSearch(e.target.value)} />
         </div>
-        <select className="select h-12 w-56 bg-surface-900 border-none shadow-inner font-medium text-slate-300" value={filterCat} onChange={e => setFilterCat(e.target.value)}>
+        <select className="select h-11 w-56 bg-white border-slate-200 shadow-sm font-medium text-slate-700" value={filterCat} onChange={e => setFilterCat(e.target.value)}>
           <option value="">Todas las categorías</option>
           {categorias.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
         </select>
-        <label className="flex items-center gap-3 text-sm font-bold text-slate-300 cursor-pointer bg-surface-900 h-12 px-5 rounded-xl shadow-inner select-none transition-colors hover:bg-surface-800">
-          <input type="checkbox" className="w-5 h-5 rounded border-white/10 bg-surface-700 accent-indigo-500" checked={filterBajoStock} onChange={e => setFilterBajoStock(e.target.checked)} />
+        <label className="flex items-center gap-3 text-sm font-bold text-slate-700 cursor-pointer bg-white h-11 px-5 rounded-xl shadow-sm border border-slate-200 select-none transition-colors hover:bg-slate-50">
+          <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500" checked={filterBajoStock} onChange={e => setFilterBajoStock(e.target.checked)} />
           SOLO BAJO STOCK
         </label>
       </div>
 
-      <div className="table-wrapper flex-1 min-h-0">
-        <table>
-          <thead className="sticky top-0 z-10 backdrop-blur-xl bg-surface-800/80">
+      <div className="table-wrapper flex-1 min-h-0 overflow-y-auto">
+        <table className="w-full relative">
+          <thead className="sticky top-0 z-10 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200">
             <tr>
-              <th>Producto</th>
-              <th>Categoría</th>
-              <th className="text-right">Compra</th>
-              <th className="text-right">Venta</th>
-              <th className="text-center">Stock</th>
-              <th className="text-right">Acciones</th>
+              <th className="py-4 px-6 text-left text-[11px] font-black uppercase tracking-widest text-slate-500">Producto</th>
+              <th className="py-4 px-6 text-left text-[11px] font-black uppercase tracking-widest text-slate-500">Categoría</th>
+              <th className="py-4 px-6 text-right text-[11px] font-black uppercase tracking-widest text-slate-500">Compra</th>
+              <th className="py-4 px-6 text-right text-[11px] font-black uppercase tracking-widest text-slate-500">Venta</th>
+              <th className="py-4 px-6 text-center text-[11px] font-black uppercase tracking-widest text-slate-500">Stock</th>
+              <th className="py-4 px-6 text-right text-[11px] font-black uppercase tracking-widest text-slate-500">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} className="text-center py-20 opacity-50 font-bold uppercase tracking-widest text-slate-400">Cargando inventario...</td></tr>
+              <tr><td colSpan={6} className="text-center py-20 font-bold uppercase tracking-widest text-slate-400">Cargando inventario...</td></tr>
             ) : data.productos.length === 0 ? (
-              <tr><td colSpan={6} className="text-center py-20 opacity-50 font-bold uppercase tracking-widest text-slate-400">No hay productos que coincidan.</td></tr>
+              <tr><td colSpan={6} className="text-center py-20 font-bold uppercase tracking-widest text-slate-400">No hay productos que coincidan.</td></tr>
             ) : data.productos.map(p => {
               const bajo = p.stock_actual <= p.stock_minimo
               return (
-                <tr key={p.id}>
-                  <td>
+                <tr key={p.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
+                  <td className="py-4 px-6">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-surface-700 flex items-center justify-center text-indigo-400 border border-white/5">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100 shrink-0">
                         <LuPackage size={18} />
                       </div>
                       <div>
-                        <p className="font-bold text-white text-base leading-tight">{p.nombre}</p>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-1">{p.marca || 'Genérico'} · <span className="text-indigo-400">{p.codigo || 'S/C'}</span></p>
+                        <p className="font-bold text-slate-900 text-sm leading-tight">{p.nombre}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-1">{p.marca || 'Genérico'} · <span className="text-indigo-500">{p.codigo || 'S/C'}</span></p>
                       </div>
                     </div>
                   </td>
-                  <td><span className="badge badge-blue">{p.categoria_nombre || 'Sin Categoría'}</span></td>
-                  <td className="text-right font-mono text-slate-400 text-sm">{fmt(p.precio_compra)}</td>
-                  <td className="text-right font-black text-emerald-400 text-base">{fmt(p.precio_venta)}</td>
-                  <td className="text-center">
+                  <td className="py-4 px-6"><span className="badge badge-blue">{p.categoria_nombre || 'Sin Categoría'}</span></td>
+                  <td className="py-4 px-6 text-right font-mono text-slate-500 text-sm">{fmt(p.precio_compra)}</td>
+                  <td className="py-4 px-6 text-right font-black text-emerald-600 text-base">{fmt(p.precio_venta)}</td>
+                  <td className="py-4 px-6 text-center">
                     <div className="flex flex-col items-center">
-                      <span className={`font-black text-lg leading-none ${bajo ? 'text-red-400' : 'text-slate-200'}`}>{p.stock_actual}</span>
+                      <span className={`font-black text-lg leading-none ${bajo ? 'text-red-600' : 'text-slate-900'}`}>{p.stock_actual}</span>
                       <span className="text-[9px] font-bold uppercase text-slate-500 tracking-widest mt-1">{p.unidad_medida}</span>
-                      {bajo && <span className="flex items-center justify-center gap-1 text-[9px] text-red-400 mt-1.5 font-bold uppercase tracking-widest bg-red-500/10 px-2 py-0.5 rounded-md border border-red-500/20"><LuTriangleAlert size={10} /> MÍN {p.stock_minimo}</span>}
+                      {bajo && <span className="flex items-center justify-center gap-1 text-[9px] text-red-700 mt-1.5 font-bold uppercase tracking-widest bg-red-50 px-2 py-0.5 rounded-md border border-red-200"><LuTriangleAlert size={10} /> MÍN {p.stock_minimo}</span>}
                     </div>
                   </td>
-                  <td className="text-right">
-                    <div className="flex justify-end gap-2 opacity-60 hover:opacity-100 transition-opacity">
-                      <button onClick={() => { setSelected(p); setModal('editar') }} className="w-9 h-9 rounded-lg flex items-center justify-center text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500 hover:text-white transition-colors"><LuPencil size={16} /></button>
-                      <button onClick={() => { setSelected(p); setModal('merma') }} className="w-9 h-9 rounded-lg flex items-center justify-center text-amber-500 bg-amber-500/10 hover:bg-amber-500 hover:text-white transition-colors"><LuTrendingDown size={16} /></button>
-                      <button onClick={() => setConfirmDelete(p)} className="w-9 h-9 rounded-lg flex items-center justify-center text-red-400 bg-red-500/10 hover:bg-red-500 hover:text-white transition-colors"><LuTrash2 size={16} /></button>
+                  <td className="py-4 px-6 text-right">
+                    <div className="flex justify-end gap-2">
+                      <button onClick={() => { setSelected(p); setModal('editar') }} className="w-9 h-9 rounded-lg flex items-center justify-center text-indigo-600 bg-indigo-50 hover:bg-indigo-600 hover:text-white transition-colors border border-indigo-100 hover:border-transparent"><LuPencil size={16} /></button>
+                      <button onClick={() => { setSelected(p); setModal('merma') }} className="w-9 h-9 rounded-lg flex items-center justify-center text-amber-600 bg-amber-50 hover:bg-amber-500 hover:text-white transition-colors border border-amber-100 hover:border-transparent"><LuTrendingDown size={16} /></button>
+                      <button onClick={() => setConfirmDelete(p)} className="w-9 h-9 rounded-lg flex items-center justify-center text-red-600 bg-red-50 hover:bg-red-600 hover:text-white transition-colors border border-red-100 hover:border-transparent"><LuTrash2 size={16} /></button>
                     </div>
                   </td>
                 </tr>
@@ -315,8 +315,8 @@ export default function Inventario() {
       </div>
 
       {data.pages > 1 && (
-        <div className="flex items-center justify-between mt-2 px-2">
-          <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Página <span className="text-white">{page}</span> de <span className="text-white">{data.pages}</span></p>
+        <div className="flex items-center justify-between mt-4 px-2 shrink-0">
+          <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Página <span className="text-slate-900">{page}</span> de <span className="text-slate-900">{data.pages}</span></p>
           <div className="flex gap-2">
             <button disabled={page === 1} onClick={() => load(page - 1)} className="btn-secondary h-10 px-4"><LuChevronLeft /> Ant</button>
             <button disabled={page === data.pages} onClick={() => load(page + 1)} className="btn-secondary h-10 px-4">Sig <LuChevronRight /></button>
