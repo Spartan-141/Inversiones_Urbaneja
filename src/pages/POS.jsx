@@ -76,36 +76,35 @@ function PagoModal({ totalFinal, onClose, onConfirm, onError, fmt }) {
     <div className="modal-backdrop" onClick={e => e.target===e.currentTarget && onClose()}>
       <div className="modal-lg">
         <div className="flex justify-between items-center mb-5">
-          <h2 className="text-xl font-bold">💳 Registrar Pago</h2>
-          <button onClick={onClose} className="btn-ghost btn-sm text-xl">✕</button>
+          <h2 className="text-xl font-bold text-slate-900">💳 Registrar Pago</h2>
+          <button onClick={onClose} className="btn-ghost btn-sm text-xl text-slate-500 hover:text-slate-800">✕</button>
         </div>
 
-        <div className="bg-surface-900 border border-border-strong rounded-[2rem] p-8 mb-8 text-center shadow-inner">
-          <p className="text-[11px] uppercase tracking-[0.2em] font-black mb-3" style={{ color: 'var(--fg-muted)' }}>Total a cobrar</p>
-          <p className="text-5xl font-black text-indigo-400 tracking-tighter">{fmt(totalFinal)}</p>
+        <div className="bg-slate-50 border border-slate-200 rounded-[2rem] p-6 mb-6 text-center shadow-sm">
+          <p className="text-[11px] uppercase tracking-[0.2em] font-black mb-3 text-slate-500">Total a cobrar</p>
+          <p className="text-5xl font-black text-brand-600 tracking-tighter">{fmt(totalFinal)}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           {METODOS.map(m => (
             <div key={m.key}>
-              <label className="label">{m.icon} {m.label}</label>
-              <input className="input h-12 text-lg font-bold" type="number" min="0" step="0.01" placeholder="0,00"
+              <label className="label text-slate-700">{m.icon} {m.label}</label>
+              <input className="input h-12 text-lg font-bold bg-white border-slate-200 text-slate-900 shadow-sm" type="number" min="0" step="0.01" placeholder="0,00"
                 value={pagos[m.key]} onChange={e => setPagos(p => ({ ...p, [m.key]: e.target.value }))} />
             </div>
           ))}
         </div>
 
-        <div className="rounded-xl p-4 space-y-3 text-sm mb-6" style={{ backgroundColor: 'var(--surface-700)' }}>
-          <div className="flex justify-between"><span style={{ color: 'var(--fg-muted)' }}>Total pagado:</span><span className="font-bold">{fmt(totalPagado)}</span></div>
-          {esCredito && <div className="flex justify-between"><span className="text-red-400 font-semibold">Falta por pagar:</span><span className="text-red-400 font-bold">{fmt(falta)}</span></div>}
-          {vuelto > 0.05 && <div className="flex justify-between"><span className="text-emerald-400 font-semibold">Vuelto:</span><span className="text-emerald-400 font-bold">{fmt(vuelto)}</span></div>}
+        <div className="rounded-xl p-4 space-y-3 text-sm mb-6 bg-white border border-slate-200 shadow-sm">
+          <div className="flex justify-between"><span className="text-slate-500">Total pagado:</span><span className="font-bold text-slate-900">{fmt(totalPagado)}</span></div>
+          {esCredito && <div className="flex justify-between"><span className="text-red-500 font-semibold">Falta por pagar:</span><span className="text-red-600 font-bold">{fmt(falta)}</span></div>}
+          {vuelto > 0.05 && <div className="flex justify-between"><span className="text-emerald-500 font-semibold">Vuelto:</span><span className="text-emerald-600 font-bold">{fmt(vuelto)}</span></div>}
         </div>
 
-        <div className={`mb-6 p-4 rounded-xl border ${esCredito ? 'bg-amber-500/10 border-amber-500/30' : 'border-white/5'}`}
-          style={!esCredito ? { backgroundColor: 'var(--surface-700)' } : {}}>
-          {esCredito && <p className="text-amber-500 text-xs font-bold uppercase mb-2">⚠️ Venta a Crédito — Se requiere nombre</p>}
+        <div className={`mb-6 p-4 rounded-xl border ${esCredito ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-200'}`}>
+          {esCredito && <p className="text-amber-600 text-xs font-bold uppercase mb-2">⚠️ Venta a Crédito — Se requiere nombre</p>}
           <input
-            className="input"
+            className="input bg-white border-slate-200 text-slate-900 shadow-sm"
             placeholder={esCredito ? "Nombre del cliente *" : "Nombre del cliente (Opcional)"}
             value={clienteNombre}
             onChange={e => setClienteNombre(e.target.value)}
@@ -227,55 +226,54 @@ export default function POS() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row h-full overflow-hidden bg-surface-900 relative">
+    <div className="flex flex-col md:flex-row h-full overflow-hidden relative">
       {/* Decorative Background Elements */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-50 rounded-full blur-[120px] pointer-events-none"></div>
 
       {/* Left: Cart Area */}
-      <div className="flex-1 flex flex-col p-4 sm:p-8 gap-6 overflow-hidden min-h-0 z-10">
+      <div className="flex-1 flex flex-col p-4 sm:p-6 gap-4 overflow-hidden min-h-0 z-10">
         <div className="flex items-center justify-between">
-          <h1 className="page-title text-white flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <h1 className="page-title text-slate-900 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
               <LuShoppingCart size={22} />
             </div>
             Punto de Venta
           </h1>
         </div>
 
-        {/* Big Search Bar */}
-        <div className="relative group z-20">
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
-          <div className="relative bg-surface-800/80 backdrop-blur-md rounded-2xl border border-white/10 flex items-center shadow-lg transition-all group-focus-within:border-indigo-500/50 group-focus-within:shadow-glow">
-            <div className="pl-6 text-indigo-400">
-              <LuSearch size={24} />
+        {/* Search Bar */}
+        <div className="relative group z-20 shrink-0">
+          <div className="relative bg-white rounded-xl border border-slate-200 flex items-center shadow-sm transition-all group-focus-within:border-brand-500 group-focus-within:shadow-md">
+            <div className="pl-4 text-slate-400 group-focus-within:text-brand-600 transition-colors">
+              <LuSearch size={20} />
             </div>
-            <input ref={searchRef} className="w-full bg-transparent border-none text-white h-16 pl-4 pr-6 text-lg font-medium outline-none placeholder:text-slate-500"
+            <input ref={searchRef} className="w-full bg-transparent border-none text-slate-900 h-12 pl-3 pr-4 text-base font-medium outline-none placeholder:text-slate-400"
               placeholder="Buscar producto por nombre o código de barras..."
               value={query} onChange={e => setQuery(e.target.value)}
               onFocus={() => results.length && setShowSearch(true)}
               onBlur={() => setTimeout(() => setShowSearch(false), 200)} />
           </div>
           
-          {/* Search Dropdown (Impeccable Layering) */}
+          {/* Search Dropdown */}
           {showSearch && results.length > 0 && (
-            <div className="absolute left-0 right-0 top-[calc(100%+16px)] bg-surface-800/98 backdrop-blur-3xl border border-border-strong rounded-[2rem] shadow-modal z-50 max-h-[60vh] overflow-y-auto animate-slide-up p-2">
+            <div className="absolute left-0 right-0 top-[calc(100%+8px)] bg-white border border-slate-200 rounded-2xl shadow-xl z-50 max-h-[60vh] overflow-y-auto animate-slide-up p-2">
               {results.map((r, i) => (
                 <button key={i} onMouseDown={() => addToCart(r)}
-                  className="w-full flex items-center justify-between px-6 py-5 hover:bg-white/5 transition-all rounded-2xl border-b border-white/5 last:border-0 group/item">
-                  <div className="flex items-center gap-6">
-                    <div className="w-14 h-14 rounded-2xl bg-surface-700 flex items-center justify-center text-indigo-400 group-hover/item:bg-indigo-500/20 group-hover/item:text-indigo-300 transition-all shadow-inner">
-                      <LuPackage size={28} />
+                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-all rounded-xl border-b border-slate-100 last:border-0 group/item">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-indigo-600 group-hover/item:bg-indigo-50 group-hover/item:text-indigo-700 transition-all border border-slate-200 group-hover/item:border-indigo-100">
+                      <LuPackage size={24} />
                     </div>
                     <div className="text-left">
-                      <p className="font-black text-lg text-white leading-tight tracking-tight">{r.nombre}</p>
-                      <div className="flex items-center gap-4 mt-2">
+                      <p className="font-bold text-base text-slate-900 leading-tight">{r.nombre}</p>
+                      <div className="flex items-center gap-3 mt-1">
                         <span className="badge badge-blue">{r.codigo || 'S/C'}</span>
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em]">Stock: {r.stock_actual} {r.unidad_medida}</span>
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.1em]">Stock: {r.stock_actual} {r.unidad_medida}</span>
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-black text-2xl text-emerald-400 tracking-tighter">{fmt(r.precio_venta)}</p>
+                    <p className="font-black text-xl text-emerald-600">{fmt(r.precio_venta)}</p>
                   </div>
                 </button>
               ))}
@@ -283,46 +281,46 @@ export default function POS() {
           )}
         </div>
 
-        {/* Cart Items Grid/List */}
-        <div className="flex-1 overflow-y-auto min-h-0 relative rounded-3xl border border-white/5 bg-surface-800/30 backdrop-blur-sm p-2">
+        {/* Cart Items List */}
+        <div className="flex-1 overflow-y-auto min-h-0 relative rounded-2xl border border-slate-200 bg-slate-50/50 p-2">
           {cart.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center gap-4 opacity-40">
-              <div className="w-24 h-24 rounded-full bg-surface-700 flex items-center justify-center text-slate-500 mb-4 shadow-inner">
-                <LuShoppingCart size={48} />
+            <div className="h-full flex flex-col items-center justify-center gap-3 opacity-60">
+              <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2 border border-slate-200">
+                <LuShoppingCart size={40} />
               </div>
               <div className="text-center">
-                <p className="text-2xl font-black text-slate-300 tracking-tight">Carrito Vacío</p>
-                <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-2">Agrega productos para comenzar</p>
+                <p className="text-xl font-bold text-slate-700 tracking-tight">Carrito Vacío</p>
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-1">Agrega productos para comenzar</p>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-2 p-2">
+            <div className="flex flex-col gap-2 p-1">
               {cart.map((item, i) => (
-                <div key={i} className="flex items-center justify-between bg-surface-800/80 backdrop-blur-md border border-white/5 rounded-2xl p-4 shadow-sm hover:border-white/10 transition-colors group">
+                <div key={i} className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:border-slate-300 transition-colors group">
                   <div className="flex-1">
-                    <p className="font-bold text-base text-white">{item.nombre}</p>
+                    <p className="font-bold text-sm text-slate-900">{item.nombre}</p>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Unit: {fmt(item.precio_unitario)}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-400/70">Stock: {item.stock_actual}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-500">Stock: {item.stock_actual}</span>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-1 bg-surface-900 rounded-xl p-1 border border-white/5">
-                      <button onClick={()=>updateQty(i,item.cantidad - (item.unidad_medida==='kg' ? 0.1 : 1))} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-surface-700 hover:text-white transition-colors"><LuMinus size={14}/></button>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1 bg-slate-50 rounded-lg p-1 border border-slate-200">
+                      <button onClick={()=>updateQty(i,item.cantidad - (item.unidad_medida==='kg' ? 0.1 : 1))} className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors"><LuMinus size={14}/></button>
                       <input type="number" step={item.unidad_medida==='kg' ? "0.01" : "1"}
-                        className="w-12 text-center font-bold bg-transparent text-white border-none outline-none text-sm"
+                        className="w-10 text-center font-bold bg-transparent text-slate-900 border-none outline-none text-sm p-0"
                         value={item.cantidad}
                         onChange={e=>updateQty(i, e.target.value)} />
-                      <button onClick={()=>updateQty(i,item.cantidad + (item.unidad_medida==='kg' ? 0.1 : 1))} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-surface-700 hover:text-white transition-colors"><LuPlus size={14}/></button>
+                      <button onClick={()=>updateQty(i,item.cantidad + (item.unidad_medida==='kg' ? 0.1 : 1))} className="w-7 h-7 rounded-md flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors"><LuPlus size={14}/></button>
                     </div>
                     
-                    <div className="w-32 text-right">
-                      <p className="font-black text-lg text-emerald-400">{fmt(item.subtotal)}</p>
+                    <div className="w-24 text-right">
+                      <p className="font-black text-base text-emerald-600">{fmt(item.subtotal)}</p>
                     </div>
                     
-                    <button onClick={()=>removeItem(i)} className="w-10 h-10 rounded-xl flex items-center justify-center text-red-500/50 hover:bg-red-500/10 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100">
-                      <LuTrash2 size={18} />
+                    <button onClick={()=>removeItem(i)} className="w-8 h-8 rounded-lg flex items-center justify-center text-red-500 opacity-60 hover:bg-red-50 hover:text-red-600 hover:opacity-100 transition-colors">
+                      <LuTrash2 size={16} />
                     </button>
                   </div>
                 </div>
@@ -333,60 +331,59 @@ export default function POS() {
       </div>
 
       {/* Right: Receipt / Summary Panel */}
-      <div className={`md:w-[380px] bg-surface-800 border-l border-white/5 flex flex-col z-20 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] ${cart.length > 0 ? 'flex' : 'hidden md:flex'}`}>
-        <div className="p-8 border-b border-white/5 bg-surface-900/50">
-          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-indigo-400 flex items-center gap-3">
-            <LuClipboardList size={18} /> Resumen de Venta
+      <div className={`md:w-[320px] bg-slate-50 border-l border-slate-200 flex flex-col z-20 ${cart.length > 0 ? 'flex' : 'hidden md:flex'}`}>
+        <div className="p-6 border-b border-slate-200 bg-white">
+          <h2 className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600 flex items-center gap-2">
+            <LuClipboardList size={16} /> Resumen de Venta
           </h2>
         </div>
         
-        <div className="flex-1 flex flex-col p-8 gap-8 overflow-y-auto">
+        <div className="flex-1 flex flex-col p-6 gap-6 overflow-y-auto">
           {/* Totals Section */}
-          <div className="space-y-5">
+          <div className="space-y-4">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-400 font-bold uppercase tracking-widest text-[11px]">Subtotal</span>
-              <span className="font-bold text-white">{fmt(subtotal)}</span>
+              <span className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Subtotal</span>
+              <span className="font-black text-slate-900">{fmt(subtotal)}</span>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Descuento</label>
-                <div className="flex bg-surface-900 p-1 rounded-lg border border-white/5">
-                  <button onClick={() => setTipoDescuento('ves')} className={`px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all ${tipoDescuento==='ves' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-500 hover:text-white'}`}>Bs</button>
-                  <button onClick={() => setTipoDescuento('perc')} className={`px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wider transition-all ${tipoDescuento==='perc' ? 'bg-indigo-500 text-white shadow-md' : 'text-slate-500 hover:text-white'}`}>%</button>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Descuento</label>
+                <div className="flex bg-slate-200 p-1 rounded-md">
+                  <button onClick={() => setTipoDescuento('ves')} className={`px-3 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-all ${tipoDescuento==='ves' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}>Bs</button>
+                  <button onClick={() => setTipoDescuento('perc')} className={`px-3 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-all ${tipoDescuento==='perc' ? 'bg-white text-brand-600 shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}>%</button>
                 </div>
               </div>
               <div className="relative">
-                <input className="input h-14 text-xl text-right font-bold pr-12" placeholder="0,00"
+                <input className="input h-10 text-base text-right font-bold pr-10 bg-white border-slate-200 text-slate-900" placeholder="0,00"
                   value={descuento} onChange={e => setDescuento(e.target.value.replace(/[^0-9.]/g,''))} />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-slate-500">{tipoDescuento === 'ves' ? 'Bs' : '%'}</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">{tipoDescuento === 'ves' ? 'Bs' : '%'}</span>
               </div>
             </div>
             
             {descVal > 0 && (
-              <div className="flex justify-between items-center text-sm py-3 border-t border-dashed border-white/10">
-                <span className="text-red-400 font-bold uppercase tracking-widest text-[11px]">Descuento Aplicado</span>
-                <span className="font-bold text-red-400">- {fmt(descVal)}</span>
+              <div className="flex justify-between items-center text-sm py-2 border-t border-dashed border-slate-300">
+                <span className="text-red-500 font-bold uppercase tracking-widest text-[10px]">Descuento Aplicado</span>
+                <span className="font-bold text-red-500">- {fmt(descVal)}</span>
               </div>
             )}
           </div>
 
-          <div className="mt-auto pt-8 border-t border-white/10 relative">
-            <div className="flex flex-col mb-8">
-              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Total a Pagar</span>
-              <span className="text-5xl font-black text-emerald-400 tracking-tight">{fmt(totalFinal)}</span>
+          <div className="mt-auto pt-6 border-t border-slate-200 relative">
+            <div className="flex flex-col mb-6">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">Total a Pagar</span>
+              <span className="text-4xl font-black text-emerald-600 tracking-tight">{fmt(totalFinal)}</span>
             </div>
             
             <button onClick={() => cart.length && setModal('pago')} disabled={cart.length === 0}
-              className="btn-success h-16 w-full text-lg shadow-glow-success relative overflow-hidden group">
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+              className="btn-success h-14 w-full text-base shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
               <span className="relative flex items-center justify-center gap-2">
-                Cobrar Ahora <LuCircleCheck size={20} />
+                Cobrar Ahora <LuCircleCheck size={18} />
               </span>
             </button>
             
             <button onClick={clearCart} disabled={cart.length===0} 
-              className="w-full text-center mt-5 text-[11px] font-bold text-slate-500 uppercase tracking-widest hover:text-red-400 transition-colors py-2">
+              className="w-full text-center mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-red-500 transition-colors py-1">
               Vaciar Carrito
             </button>
           </div>
@@ -401,19 +398,19 @@ export default function POS() {
 
       {modal === 'ticket' && lastVenta && (
         <div className="modal-backdrop">
-          <div className="modal text-center max-w-sm border-emerald-500/30">
-            <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow-success">
-              <LuCircleCheck className="text-4xl text-emerald-400" />
+          <div className="modal text-center max-w-sm">
+            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5 border border-emerald-200">
+              <LuCircleCheck className="text-3xl text-emerald-600" />
             </div>
-            <h2 className="text-3xl font-black mb-2 text-white tracking-tight">¡Venta Exitosa!</h2>
-            <p className="text-sm mb-8 text-slate-400 font-medium">
-              Folio <span className="font-bold text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded-md ml-1">#{lastVenta.venta.id}</span>
+            <h2 className="text-2xl font-black mb-2 text-slate-900 tracking-tight">¡Venta Exitosa!</h2>
+            <p className="text-xs mb-6 text-slate-500 font-medium">
+              Folio <span className="font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded border border-indigo-100 ml-1">#{lastVenta.venta.id}</span>
               <br/><br/>
               <span className="uppercase tracking-widest text-[10px] font-bold">{lastVenta.venta.estado === 'credito' ? 'Venta a Crédito' : 'Pago Completo'}</span>
             </p>
             <div className="flex flex-col gap-3">
-              <button onClick={()=>printTicket({...lastVenta, config})} className="btn-primary h-14 w-full">Imprimir Ticket</button>
-              <button onClick={()=>setModal(null)} className="btn-secondary h-14 w-full">Nueva Venta</button>
+              <button onClick={()=>printTicket({...lastVenta, config})} className="btn-primary h-12 w-full">Imprimir Ticket</button>
+              <button onClick={()=>setModal(null)} className="btn-secondary h-12 w-full">Nueva Venta</button>
             </div>
           </div>
         </div>
@@ -423,3 +420,4 @@ export default function POS() {
     </div>
   )
 }
+
