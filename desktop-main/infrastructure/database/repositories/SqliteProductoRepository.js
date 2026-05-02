@@ -32,7 +32,7 @@ class SqliteProductoRepository {
       query += ' AND p.stock_actual <= p.stock_minimo';
     }
 
-    const countQuery = `SELECT COUNT(*) as total FROM (${query})`;
+    const countQuery = `SELECT COUNT(*) as total FROM (SELECT id FROM productos p WHERE 1=1 ${search ? ' AND (p.nombre LIKE ? OR p.codigo LIKE ? OR p.marca LIKE ?)' : ''} ${categoria_id ? ' AND p.categoria_id = ?' : ''} ${bajo_stock ? ' AND p.stock_actual <= p.stock_minimo' : ''})`;
     const { total } = await db.get(countQuery, params);
 
     query += ' ORDER BY p.id DESC LIMIT ? OFFSET ?';
@@ -52,7 +52,7 @@ class SqliteProductoRepository {
     const { lastID } = await db.run(`
       INSERT INTO productos (codigo, nombre, marca, categoria_id, unidad_medida, precio_compra, precio_venta, stock_actual, stock_minimo, descripcion)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [data.codigo, data.nombre, data.marca, data.categoria_id, data.unidad_medida, data.precio_compra, data.precio_venta, data.stock_actual, data.stock_minimo, data.descripcion]);
+    `, [data.codigo, data.nombre, data.marca, data.categoria_id, data.unidad_medida, data.precio_compra || 0, data.precio_venta || 0, data.stock_actual, data.stock_minimo, data.descripcion]);
     return lastID;
   }
 
@@ -63,7 +63,7 @@ class SqliteProductoRepository {
         codigo = ?, nombre = ?, marca = ?, categoria_id = ?, unidad_medida = ?,
         precio_compra = ?, precio_venta = ?, stock_actual = ?, stock_minimo = ?, descripcion = ?
       WHERE id = ?
-    `, [data.codigo, data.nombre, data.marca, data.categoria_id, data.unidad_medida, data.precio_compra, data.precio_venta, data.stock_actual, data.stock_minimo, data.descripcion, id]);
+    `, [data.codigo, data.nombre, data.marca, data.categoria_id, data.unidad_medida, data.precio_compra || 0, data.precio_venta || 0, data.stock_actual, data.stock_minimo, data.descripcion, id]);
   }
 
   async updateStock(id, cantidad) {
@@ -84,7 +84,6 @@ class SqliteProductoRepository {
 
   async getAlertasVencimiento() {
     const db = getDb();
-    // Return products expiring in the next 30 days or already expired
     return await db.all(`
       SELECT *, (julianday(fecha_vencimiento) - julianday('now', 'localtime')) as dias_restantes
       FROM productos
@@ -96,3 +95,5 @@ class SqliteProductoRepository {
 }
 
 module.exports = { SqliteProductoRepository };
+
+

@@ -71,9 +71,9 @@ async function initDb() {
       CREATE TABLE IF NOT EXISTS ventas (
         id                    INTEGER PRIMARY KEY AUTOINCREMENT,
         fecha                 TEXT DEFAULT (datetime('now','localtime')),
-        subtotal              REAL NOT NULL,
+        subtotal              REAL NOT NULL DEFAULT 0,
         descuento_otorgado    REAL NOT NULL DEFAULT 0,
-        total                 REAL NOT NULL,
+        total                 REAL NOT NULL DEFAULT 0,
         estado                TEXT NOT NULL DEFAULT 'pagada',
         cliente_nombre        TEXT DEFAULT '',
         saldo_pendiente       REAL NOT NULL DEFAULT 0,
@@ -88,24 +88,24 @@ async function initDb() {
         nombre              TEXT NOT NULL,
         cantidad            REAL NOT NULL,
         unidad_medida       TEXT NOT NULL DEFAULT 'unidad',
-        precio_unitario     REAL NOT NULL,
-        subtotal            REAL NOT NULL,
+        precio_unitario     REAL NOT NULL DEFAULT 0,
+        subtotal            REAL NOT NULL DEFAULT 0,
         cantidad_hojas_gastadas REAL DEFAULT 0
       );
 
       CREATE TABLE IF NOT EXISTS pagos (
-        id       INTEGER PRIMARY KEY AUTOINCREMENT,
-        venta_id INTEGER NOT NULL REFERENCES ventas(id) ON DELETE CASCADE,
-        metodo   TEXT NOT NULL,
-        monto    REAL NOT NULL,
-        fecha    TEXT DEFAULT (datetime('now','localtime'))
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
+        venta_id  INTEGER NOT NULL REFERENCES ventas(id) ON DELETE CASCADE,
+        metodo    TEXT NOT NULL,
+        monto     REAL NOT NULL DEFAULT 0,
+        fecha     TEXT DEFAULT (datetime('now','localtime'))
       );
 
       CREATE TABLE IF NOT EXISTS abonos (
         id        INTEGER PRIMARY KEY AUTOINCREMENT,
         venta_id  INTEGER NOT NULL REFERENCES ventas(id) ON DELETE CASCADE,
         metodo    TEXT NOT NULL,
-        monto     REAL NOT NULL,
+        monto     REAL NOT NULL DEFAULT 0,
         fecha     TEXT DEFAULT (datetime('now','localtime'))
       );
 
