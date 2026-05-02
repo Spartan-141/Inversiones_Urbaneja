@@ -118,27 +118,12 @@ async function initDb() {
         notas TEXT DEFAULT '',
         fecha TEXT DEFAULT (datetime('now','localtime'))
       );
-
-      CREATE TABLE IF NOT EXISTS cierres_dia (
-        id                   INTEGER PRIMARY KEY AUTOINCREMENT,
-        fecha                TEXT NOT NULL UNIQUE,
-        total_ventas_count   INTEGER DEFAULT 0,
-        ingresos             REAL DEFAULT 0,
-        efectivo_sistema     REAL DEFAULT 0,
-        digital_sistema      REAL DEFAULT 0,
-        efectivo_contado     REAL DEFAULT 0,
-        digital_contado      REAL DEFAULT 0,
-        diferencia           REAL DEFAULT 0,
-        pendiente_cobrar     REAL DEFAULT 0,
-        ganancia_neta        REAL DEFAULT 0,
-        notas                TEXT DEFAULT '',
-        cerrado_en           TEXT DEFAULT (datetime('now','localtime'))
-      );
     `);
 
     // Ensure columns exist (Manual migrations)
     try { await db.exec('ALTER TABLE ventas ADD COLUMN subtotal REAL NOT NULL DEFAULT 0'); } catch (e) {}
     try { await db.exec('ALTER TABLE ventas ADD COLUMN total REAL NOT NULL DEFAULT 0'); } catch (e) {}
+    try { await db.exec('ALTER TABLE ventas ADD COLUMN descuento_otorgado REAL NOT NULL DEFAULT 0'); } catch (e) {}
     try { await db.exec('ALTER TABLE ventas ADD COLUMN saldo_pendiente REAL NOT NULL DEFAULT 0'); } catch (e) {}
     try { await db.exec('ALTER TABLE detalle_venta ADD COLUMN subtotal REAL NOT NULL DEFAULT 0'); } catch (e) {}
     console.log('[DB] Basic migrations checked.');

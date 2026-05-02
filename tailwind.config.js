@@ -5,18 +5,19 @@ export default {
     extend: {
       colors: {
         brand: {
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          900: '#0c4a6e',
+          300: '#d9f99d',
+          400: '#bef264',
+          500: '#a3e635', /* The vibrant lime */
+          600: '#84cc16',
+          700: '#65a30d',
+          900: '#3f6212',
         },
         surface: {
-          600: '#1e293b',
-          700: '#1a2235',
-          800: '#131929',
-          900: '#0d1117',
+          500: '#e5e7eb',
+          600: '#f3f4f6', /* Elevated hover */
+          700: '#ffffff', /* Main white cards */
+          800: '#e9ebf0', /* Sidebar/Subtle backgrounds */
+          900: '#d9dce3', /* App Root background */
         },
         accent: {
           green:  '#22c55e',

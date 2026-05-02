@@ -3,7 +3,6 @@ const { SqliteProductoRepository } = require('../database/repositories/SqlitePro
 const { SqliteVentaRepository } = require('../database/repositories/SqliteVentaRepository');
 const { SqliteCategoriaRepository } = require('../database/repositories/SqliteCategoriaRepository');
 const { SqliteConfigRepository } = require('../database/repositories/SqliteConfigRepository');
-const { SqliteCierreRepository } = require('../database/repositories/SqliteCierreRepository');
 const { SqliteUnitOfWork } = require('../database/connection/SqliteUnitOfWork');
 const { VentasUseCases } = require('../../application/use-cases/VentasUseCases');
 
@@ -12,7 +11,6 @@ const productosRepo = new SqliteProductoRepository();
 const ventasRepo = new SqliteVentaRepository();
 const categoriasRepo = new SqliteCategoriaRepository();
 const configRepo = new SqliteConfigRepository();
-const cierreRepo = new SqliteCierreRepository();
 const uow = new SqliteUnitOfWork();
 
 // Use Cases
@@ -23,7 +21,6 @@ module.exports = {
   productosRepo,
   categoriasRepo,
   configRepo,
-  cierreRepo,
   ventasRepo,
   uow
 };

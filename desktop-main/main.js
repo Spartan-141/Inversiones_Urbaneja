@@ -11,7 +11,6 @@ const { registerVentasHandlers } = require('./infrastructure/controllers/ipc/Ven
 const { registerProductosHandlers } = require('./infrastructure/controllers/ipc/ProductosIpcController');
 const { registerCategoriasHandlers } = require('./infrastructure/controllers/ipc/CategoriasIpcController');
 const { registerConfigHandlers } = require('./infrastructure/controllers/ipc/ConfigIpcController');
-const { registerCierresHandlers } = require('./infrastructure/controllers/ipc/CierresIpcController');
 
 let mainWindow;
 
@@ -53,7 +52,6 @@ app.whenReady().then(async () => {
   registerProductosHandlers();
   registerCategoriasHandlers();
   registerConfigHandlers();
-  registerCierresHandlers();
 
   // Quick debug logger
   ipcMain.handle('log', (_, msg) => {
