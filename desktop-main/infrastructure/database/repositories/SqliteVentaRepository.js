@@ -137,6 +137,11 @@ class SqliteVentaRepository {
     };
   }
 
+  async getCredits() {
+    const db = getDb();
+    return await db.all('SELECT * FROM ventas WHERE estado = "credito" AND saldo_pendiente > 0 ORDER BY fecha DESC');
+  }
+
   async addAbono({ venta_id, metodo, monto }) {
     const db = getDb();
     await db.run('INSERT INTO abonos (venta_id, metodo, monto) VALUES (?, ?, ?)', [venta_id, metodo, monto]);
